@@ -1,70 +1,163 @@
-Quiz Game System
-‎
-‎Project Description
-‎
-‎The Quiz Game System is a simple Python project that allows users to answer multiple-choice questions about programming. The program computes the player's score and saves it in a JSON file for the leaderboard.
-‎
-‎This project uses basic Python concepts such as classes and objects, loops, conditional statements, file handling, lists, dictionaries, and sorting.
-‎
-‎The purpose of this project is to create a simple and interactive quiz game using a command-line interface.
-‎
-‎Features
-‎
-‎- Start Quiz
-‎- Multiple Choice Questions
-‎- Programming Questions
-‎- Score Calculation
-‎- Leaderboard
-‎- Save Scores
-‎- Simple CLI Menu
-‎
-‎
-‎Sample CLI Usage
-‎
-‎=== QUIZ GAME ===
-‎
-‎1. Start Quiz
-‎2. Leaderboard
-‎3. Exit
-‎
-‎Enter choice: 1
-‎
-‎What does CPU stand for?
-‎
-‎A. Central Process Unit
-‎B. Central Processing Unit
-‎C. Computer Personal Unit
-‎D. Central Program Utility
-‎
-‎Enter answer: B
-‎
-‎Correct!
-‎
-‎Your score is: 5
-‎Score saved!
-‎
-‎
-‎Screenshots:
-‎
-‎
-‎
-‎
-‎Python Concepts Used
-‎
-‎- Classes and Objects
-‎- Lists and Dictionaries
-‎- Loops
-‎- Conditional Statements
-‎- File Handling
-‎- JSON
-‎- Sorting
-‎
-‎Future Improvements
-‎
-‎- Add more questions
-‎- Add timer
-‎- Add difficulty levels
-‎- Improve design
-‎
-‎YouTube Video Demonstration :
+# main.py
+
+import json
+import os
+
+
+class Player:
+
+    def __init__(self, name):
+        self.name = name
+        self.score = 0
+
+
+class Quiz:
+
+    def __init__(self):
+        self.questions = [
+            {
+                "question": "What does CPU stand for?",
+                "choices": [
+                    "A. Central Process Unit",
+                    "B. Central Processing Unit",
+                    "C. Computer Personal Unit",
+                    "D. Central Program Utility"
+                ],
+                "answer": "B"
+            },
+            {
+                "question": "Which programming language is known for web development?",
+                "choices": [
+                    "A. HTML",
+                    "B. Python",
+                    "C. JavaScript",
+                    "D. All of the above"
+                ],
+                "answer": "D"
+            },
+            {
+                "question": "What symbol is used for comments in Python?",
+                "choices": [
+                    "A. //",
+                    "B. <!-- -->",
+                    "C. #",
+                    "D. **"
+                ],
+                "answer": "C"
+            },
+            {
+                "question": "Which data type stores whole numbers in Python?",
+                "choices": [
+                    "A. string",
+                    "B. float",
+                    "C. int",
+                    "D. bool"
+                ],
+                "answer": "C"
+            },
+            {
+                "question": "What keyword is used to create a function in Python?",
+                "choices": [
+                    "A. function",
+                    "B. define",
+                    "C. func",
+                    "D. def"
+                ],
+                "answer": "D"
+            }
+        ]
+
+    def start_quiz(self):
+
+        name = input("Enter your name: ")
+        player = Player(name)
+
+        print("\nQuiz Started!\n")
+
+        for q in self.questions:
+
+            print(q["question"])
+
+            for choice in q["choices"]:
+                print(choice)
+
+            answer = input("Enter answer: ").upper()
+
+            if answer == q["answer"]:
+                print("Correct!\n")
+                player.score += 1
+            else:
+                print("Wrong!\n")
+
+        print("Your score is:", player.score)
+
+        self.save_score(player)
+
+    def save_score(self, player):
+
+        scores = []
+
+        if os.path.exists("scores.json"):
+
+            file = open("scores.json", "r")
+
+            try:
+                scores = json.load(file)
+            except:
+                scores = []
+
+            file.close()
+
+        scores.append({
+            "name": player.name,
+            "score": player.score
+        })
+
+        file = open("scores.json", "w")
+        json.dump(scores, file, indent=4)
+        file.close()
+
+        print("Score saved!")
+
+    def show_leaderboard(self):
+
+        if not os.path.exists("scores.json"):
+            print("No scores yet.")
+            return
+
+        file = open("scores.json", "r")
+        scores = json.load(file)
+        file.close()
+
+        scores.sort(key=lambda x: x["score"], reverse=True)
+
+        print("\nLeaderboard\n")
+
+        for player in scores:
+            print(player["name"], "-", player["score"])
+
+
+quiz = Quiz()
+
+while True:
+
+    print("\n===== QUIZ GAME =====")
+    print("1. Start Quiz")
+    print("2. Leaderboard")
+    print("3. Exit")
+
+    choice = input("Enter choice: ")
+
+    if choice == "1":
+        quiz.start_quiz()
+
+    elif choice == "2":
+        quiz.show_leaderboard()
+
+    elif choice == "3":
+        print("Goodbye!")
+        break
+
+    else:
+        print("Invalid choice.")
 ‎
